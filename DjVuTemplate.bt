@@ -2,7 +2,7 @@
 //--- 010 Editor v2.0 Binary Template
 //
 //      File: DjVu.bt
-//    Author: prusanov
+//    Author: pablorus
 //   Version: 1.0
 //   Purpose: Parse DjVu files.
 //  Category: image
@@ -15,25 +15,31 @@
 //  https://en.wikipedia.org/wiki/DjVu
 //------------------------------------------------
 
-// Typedefs for the djvu file    - AT&T
+// Typedefs for the djvu file 
+
+// Usual chunk header - 4 chars
 typedef char ID[4];
 
-// Typedefs for the djvu file    - AT&T
-//typedef uchar INT24[3];
-typedef struct
-{
-    BitfieldDisablePadding();
-    int size:24;
-} INT24;
-
+// Convert byte array to INT24-value
 int _int24(byte data[3]){
     local int result = data[0];
-    result = result << 8;
-    result = result | data[1];
-    result = result << 8;
-    result = result | data[2];
+    result <<= 8;
+    result |= data[1];
+    result <<= 8;
+    result |= data[2];
     return result; 
 }
+
+// Basic chunk structure
+typedef struct 
+{
+    SetBackColor( cLtAqua );
+    ID     chunkID;
+    BigEndian();
+    uint length;
+    char data[length];
+} CHUNK;
+
 
 typedef struct
 {
@@ -44,25 +50,6 @@ typedef struct
 } BZZ_flag;
 
 
-// Stores the file header information
-typedef struct 
-{
-    ID     chunkID;
-    BigEndian();
-    uint length;
-    local uint i_pos = FTell();
-    //ID     file_type;
-    // char   data[length];
-} IFFWRAPPER;
-
-typedef struct 
-{
-    SetBackColor( cLtAqua );
-    ID     chunkID;
-    BigEndian();
-    uint length;
-    char data[length];
-} CHUNK;
 
 typedef struct 
 {
